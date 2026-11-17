@@ -1,0 +1,52 @@
+﻿---
+description: 微服务横切规则（Feign / 事务 / 限流 / 网关）
+globs: ["services/**"]
+alwaysApply: false
+---
+
+# 微服务横切规则
+
+依赖 [docs/architecture.md](../../docs/architecture.md) 的服务边界与 [docs/adr/0003-sync-vs-async-consistency.md](../../docs/adr/0003-sync-vs-async-consistency.md) 的一致性决策。
+
+## Feign 调用
+
+```java
+@FeignClient(name = "sku-service", path = "/api/v1/sku",
+             fallbackFactory = SkuClientFallback.class,
+             configuration = FeignTimeoutConfig.class)
+public interface SkuClient {
+    @GetMapping("/{id}")
+    Result<SkuVO> getById(@PathVariable("id") Long id);
+}
+```
+
+- **必须**配 `fallbackFactory`：降级要能拿到异常原因，不能只有一个空实现。
+- **必须**配超时（连接 1s / 读 3s 量级），默认值会拖垮整条链路。
+- 远程调用失败要**显式决定**：降级返回兜底数据，还是抛 `BizException` 让上游回滚。禁止"失败了也继续往下走"。
+
+## 事务边界
+
+| 场景 | 做法 |
+|---|---|
+| 单服务写一个库 | `@Transactional(rollbackFor = Exception.class)` |
+| 跨服务写 ≥2 个库 | 外层 `@GlobalTransactional`（Seata AT），内层本地事务照常 |
+| 只需最终一致 | 本地消息表 + 补偿，**不用**分布式事务 |
+| 只读跨服务查询 | 不开事务 |
+
+## 分布式事务禁止项
+
+- 禁止把远程调用包在**内层**方法的事务里冒充全局事务
+- 禁止 `@GlobalTransactional` + MQ 混用而不说明补偿逻辑
+- 回滚失败的场景必须有告警与人工处置 runbook
+
+## 限流与熔断
+
+- 对外接口按 Sentinel 资源名打点：`api:<模块>:<动作>`
+- 限流阈值改动要写进 `docs/runbooks/config-change.md` 的变更记录
+- 降级逻辑必须可观测：打日志 + 打点，**禁止静默降级**
+
+## 网关
+
+- 网关只做路由、鉴权、限流、日志，**禁止写业务逻辑**
+- 路由与断言配置变更走 Nacos，禁止在代码里硬编码下游地址
+- 新增路由必须同步更新 `../../docs/architecture.md` 的调用链表

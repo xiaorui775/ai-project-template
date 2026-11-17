@@ -1,0 +1,18 @@
+﻿# 默认要求 1 人 approve
+*                       @company/dev-team
+
+# 前端
+/apps/                  @company/frontend
+/packages/              @company/frontend
+
+# 高危目录：必须 owner 双签
+/services/gateway/      @company/arch-team @company/security
+/services/auth/         @company/arch-team @company/security
+/deploy/                @company/sre @company/arch-team
+
+# 约束文档本身：改动需要架构组确认
+/AGENTS.md              @company/arch-team
+/SECURITY.md            @company/security
+/docs/adr/              @company/arch-team
+/docs/architecture.md   @company/arch-team
+/.github/               @company/arch-team

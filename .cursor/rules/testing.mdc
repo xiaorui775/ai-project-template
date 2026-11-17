@@ -1,0 +1,33 @@
+﻿---
+description: 测试编写规则
+globs: ["**/*.spec.ts", "**/*.test.ts", "**/*Test.java", "**/*IT.java", "tests/**"]
+alwaysApply: false
+---
+
+# 测试规则
+
+完整说明见 [docs/testing.md](../../docs/testing.md)。
+
+## 原则
+
+- 测试验**行为**，不验实现细节（不测私有方法、不 mock 自己写的类）。
+- 一个测试只断言一件事；测试名说清"什么条件下、期望什么"。
+- **禁止**为了让测试通过而改断言、加 `skip`、加 `@Disabled`。
+
+## 前端（Vitest + Testing Library + Playwright）
+
+- 查询优先用 `getByRole` / `getByTestId`，禁止用 CSS class 定位。
+- 单测不连网络：用 `msw` 或 mock `@repo/api-client`。
+- E2E 只覆盖关键用户路径（登录、下单、导出），不追求覆盖率数字。
+
+## 后端（JUnit 5 + AssertJ + Testcontainers）
+
+- 单测不启动 Spring 上下文（纯 POJO 测试）。
+- 需要 DB/Redis 的用 Testcontainers，**禁止连本地或共享环境**。
+- 集成测试类名以 `IT` 结尾，与单测分开跑。
+- 断言金额用 `BigDecimal.compareTo`，禁止 `equals`。
+
+## 覆盖率
+
+- 新增业务代码行覆盖率 ≥ 60%，改动文件 ≥ 80%。
+- 覆盖率**不是**目标，关键分支必须有用例。

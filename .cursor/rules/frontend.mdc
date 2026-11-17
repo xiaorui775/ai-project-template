@@ -1,0 +1,36 @@
+﻿---
+description: 前端（Vue 3 + TS）目录规则
+globs: ["apps/web/**", "packages/**"]
+alwaysApply: false
+---
+
+# 前端规则
+
+完整规范见 [docs/coding-standards-frontend.md](../../docs/coding-standards-frontend.md)。以下是 AI 最容易犯的几条。
+
+## 绝对禁止
+
+- `any`、`@ts-ignore`、`as unknown as X`
+- 组件里 `fetch` / `axios`：一律 `import { api } from '@repo/api-client'`
+- `default export` 组件；必须具名导出 + `defineOptions({ name: 'XxxYyy' })`
+- `console.log` 留在提交里
+- 手写后端 VO 的字段：类型必须来自 `@repo/shared-types`
+- `v-html` 渲染用户输入
+
+## 必须遵守
+
+- `<script setup lang="ts">` + 组合式 API
+- 页面三态齐全：加载、空、错误
+- 请求期间按钮 `loading` + `disabled`
+- 雪花 ID 当 `string`，金额当 `string`，时间当 `string`
+- 分页 `page` 从 1 开始
+- 新组件先看 `../../docs/coding-standards-frontend.md` 第 3 节的模板再写
+
+## 命名
+
+| 对象 | 规则 |
+|---|---|
+| 组件文件 | `PascalCase.vue` |
+| composable | `useXxx.ts` |
+| store | `useXxxStore` |
+| 常量 | `UPPER_SNAKE_CASE` |

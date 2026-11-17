@@ -1,0 +1,33 @@
+﻿---
+description: 后端（Spring Boot）目录规则
+globs: ["services/**/*.java", "services/**/*.xml", "services/**/*.yml"]
+alwaysApply: false
+---
+
+# 后端规则
+
+完整规范见 [docs/coding-standards-backend.md](../../docs/coding-standards-backend.md)。以下是红线。
+
+## 分层红线
+
+- Controller **只**做：`@Valid` 校验 → 调 Service → 返回 `Result<T>`。禁止写 if/else 业务分支。
+- Service 才有 `@Transactional`；禁止在 Controller 上开事务。
+- Mapper 只做数据访问，禁止在里面写业务判断。
+- 跨服务调用只能走 Feign 接口 + 服务名，**禁止跨库直连**。
+
+## 绝对禁止
+
+- `System.out.println`、`e.printStackTrace()`、`printStackTrace`
+- `SELECT *`；MyBatis `${}` 拼接（排序字段需白名单）
+- 手改数据库结构：DDL 只能走 Flyway
+- 不带 fallback 的 Feign 调用
+- 列表接口不分页
+- 吞异常（`catch (Exception e) { }`）
+
+## 必须遵守
+
+- 入参 `@Valid`，接口有 `@Operation`（springdoc）说明
+- 异常抛 `BizException`，由 `GlobalExceptionHandler` 统一转 `Result`
+- 涉及 ≥2 个服务写库时用 `@GlobalTransactional`，并说明回滚点
+- 日志不含手机号、身份证、token 原文
+- 单元测试用 JUnit 5 + AssertJ；集成测试用 Testcontainers，不要连本地库

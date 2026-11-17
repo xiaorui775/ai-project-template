@@ -1,0 +1,42 @@
+# 依赖与构建产物
+node_modules/
+dist/
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# 环境变量与密钥（只提交 .env.example）
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+
+# 测试与覆盖率
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+!.vscode/extensions.json
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 本地临时
+*.local
+.cache/
+tmp/

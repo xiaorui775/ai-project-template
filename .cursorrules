@@ -1,0 +1,24 @@
+﻿# Cursor 规则（旧版入口）
+
+> 新版 Cursor 请用 `.cursor/rules/*.mdc`。本文件为兼容旧版本保留。
+> 主约束见 [AGENTS.md](AGENTS.md)——**本文件不重复规则**，只做转发。
+
+## 1. 任何改动前先读
+
+- [AGENTS.md](AGENTS.md)：技术栈、命令、硬性约束（第 4 节必须全文遵守）
+- [docs/architecture.md](docs/architecture.md)：服务边界与调用链
+
+## 2. 按范围读
+
+| 你在改 | 必读 |
+|---|---|
+| 前端 `apps/web` / `packages` | [docs/coding-standards-frontend.md](docs/coding-standards-frontend.md) |
+| 后端 `services` | [docs/coding-standards-backend.md](docs/coding-standards-backend.md) |
+| 测试 | [docs/testing.md](docs/testing.md) |
+| 鉴权、上传、SQL、密钥 | [SECURITY.md](SECURITY.md) |
+
+## 3. 三句话底线
+
+1. **不确定就停下来问**，禁止臆造 API / 字段名 / 配置项。
+2. **一次只做一件事**，不要顺手重构。
+3. **不要留占位**：`// ...`、`TODO`、示例数据混进生产代码。
